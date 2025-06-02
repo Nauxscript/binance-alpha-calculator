@@ -17,7 +17,7 @@ LINK_X_COLOR = "#007aff"
 LINK_GITHUB_COLOR = "#24292f"
 
 # 利润计算函数
-def calculate_profit(Ntl, Pb, Ipdw, Rdur, D_alpha=15, T_alpha=200):
+def calculate_profit(Ntl, Pb, T_alpha, Ipdw, Rdur, D_alpha=15):
     Vactual = pow(2, Ntl) / 2
     Nbal = Pb
     balance = pow(10, Nbal + 1)
@@ -48,6 +48,7 @@ class AlphaProfitCalculatorTk(tk.Tk):
         params = [
             ("Ntl（日交易量档位）", "Ntl", ""),
             ("Pb（余额积分）", "Pb", ""),
+            ("门槛（Tα，默认200分）", "T_alpha", "200"),
             ("Ipdw（每次领取预期收益）", "Ipdw", "100"),
             ("Rdur（交易损耗率）", "Rdur", "0.0002"),
         ]
@@ -66,8 +67,6 @@ class AlphaProfitCalculatorTk(tk.Tk):
         auto_frame.pack(padx=18, pady=(0, 10), fill="x")
         for i in range(4):
             auto_frame.grid_columnconfigure(i, weight=1)
-        self.talpha_label = tk.Label(auto_frame, text="Tα（Alpha预扣可领积分）：15（固定）", font=("Helvetica Neue", 11), bg=BG_COLOR, fg=LABEL_COLOR)
-        self.talpha_label.grid(row=0, column=0, sticky='w', pady=2)
         self.vactual_var = tk.StringVar()
         self.vactual_var.set("Vactual（真实交易量）：-")
         self.vactual_label = tk.Label(auto_frame, textvariable=self.vactual_var, font=("Helvetica Neue", 11), bg=BG_COLOR, fg=LABEL_COLOR)
@@ -122,6 +121,7 @@ class AlphaProfitCalculatorTk(tk.Tk):
         try:
             Ntl = float(self.entries["Ntl"].get())
             Pb = float(self.entries["Pb"].get())
+            T_alpha = float(self.entries["T_alpha"].get()) if self.entries["T_alpha"].get() else 200
             Vactual = pow(2, Ntl) / 2
             Nbal = Pb
             balance = pow(10, Nbal + 1)
@@ -137,9 +137,10 @@ class AlphaProfitCalculatorTk(tk.Tk):
         try:
             Ntl = float(self.entries["Ntl"].get())
             Pb = float(self.entries["Pb"].get())
+            T_alpha = float(self.entries["T_alpha"].get()) if self.entries["T_alpha"].get() else 200
             Ipdw = float(self.entries["Ipdw"].get()) if self.entries["Ipdw"].get() else 100
             Rdur = float(self.entries["Rdur"].get()) if self.entries["Rdur"].get() else 0.0002
-            profit, Vactual, Nbal, balance = calculate_profit(Ntl, Pb, Ipdw, Rdur)
+            profit, Vactual, Nbal, balance = calculate_profit(Ntl, Pb, T_alpha, Ipdw, Rdur)
             self.result_var.set(f"月利润：{profit:.2f} USD")
             self.vactual_var.set(f"Vactual（真实交易量）：{Vactual:.2f}")
             self.nbal_var.set(f"Nbal（余额档位）：{Nbal:.0f}")
